@@ -6,8 +6,14 @@ export default function App() {
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(()=>{
-    inputRef.current?.focus();
+   inputRef.current?.focus();
+      const localTasks = localStorage.getItem("tasks");
+      setTasks(JSON.parse(localTasks));
   },[])
+
+  useEffect(()=>{
+    localStorage.setItem("tasks",JSON.stringify(tasks));
+  },[tasks]);
   return (
     <div className="mt-5 bg-dark h-screen flex flex-col items-center">
       <InputBox
@@ -21,9 +27,21 @@ export default function App() {
             <ul>
               {tasks.map((task, index) => (
                 <li 
-                className="list-disc"
-                key={index}>{task}</li>
+                className="list-disc mt-2"
+                key={index}>{task}
+                <button className="ml-2
+                        bg-red-500 p-2 h-10 w-10 rounded-full
+                "
+                onClick={()=>{
+                  const nt = tasks.filter((task,i)=>
+                      i !== index
+                    )
+                    setTasks(nt);
+                }}
+                >x</button>
+                </li>
               ))}
+           
             </ul>
           ) : (
             <h2 className="text-2xl">No Tasks</h2>
@@ -37,7 +55,7 @@ export default function App() {
 function InputBox(
   { inputRef, tasks, setTasks }:
     {
-      inputRef: React.Ref<HTMLInputElement>;
+      inputRef: RefObject<HTMLInputElement>;
       tasks: string[];
       setTasks: Dispatch<SetStateAction<string[]>>
     }) {
